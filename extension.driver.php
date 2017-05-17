@@ -82,7 +82,7 @@
 			return true;
 		}
 
-		public function update($previousVersion) {
+		public function update($previousVersion = false) {
 			if(version_compare($previousVersion, '1.2', '<')) {
 				Symphony::Database()->import("
 					ALTER TABLE `tbl_etf_conditions` ADD `reply_to` varchar(255);
