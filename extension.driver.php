@@ -144,12 +144,18 @@
 
 		public function setPage($context) {
 			// Check to see if the page has 'etf' page type
-			if(is_array($context['page_data']['type']) && in_array('etf', $context['page_data']['type'])) {
+			if (is_array($context['page_data']['type']) && in_array('etf', $context['page_data']['type'])) {
+				// If there is no role field, or a Developer is logged in, return, as Developers
+				// should be able to access every page. Handles Symphony 2.4 or Symphony 2.5
+				$isDeveloper = (method_exists(Symphony::Engine(), 'Author'))
+						? Symphony::Engine()->Author() instanceof Author && Symphony::Engine()->Author()->isDeveloper()
+						: Symphony::Engine()->Author instanceof Author && Symphony::Engine()->Author->isDeveloper();
+
 				// Check to see that the page has been requested by someone who is logged in
 				// or someone who has passed the ETF header
 				if(
 					(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'EmailTemplateFilter')
-					|| Frontend::instance()->isLoggedIn() && Frontend::instance()->Author->isDeveloper()
+					|| (Frontend::instance()->isLoggedIn() && $isDeveloper)
 				) {
 					// All good!
 					self::$page = $context['page'];
